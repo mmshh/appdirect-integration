@@ -7,6 +7,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
+
+import com.appdirect.integration.entity.CustomerOrder;
+
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.exception.OAuthCommunicationException;
@@ -19,7 +23,8 @@ import oauth.signpost.exception.OAuthMessageSignerException;
 public class EventProcessor {
 
 	private static final Logger log = Logger.getLogger( EventProcessor.class.getName() );
-
+	EntityManager em = EMF.get().createEntityManager();
+	
 	public static StringBuffer fetchOrder(String eventUrl) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException{
 
 		PropertyReader propReader = new PropertyReader();
@@ -56,14 +61,14 @@ public class EventProcessor {
 		return response;
 	}
 
-	public static String generateResponse(boolean success, String errorCode, String message){
-		String response = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-				"<result>\n" +
-				"    <success>" + success + "</success>\n" +
-				"    <errorCode>"+ errorCode +"</errorCode>\n" +
-				"    <message>"+ message +"</message>\n" +
-				"</result>";
-
-		return response;
+	public static void persist(CustomerOrder customerOrder) {
+		EntityManager em = EMF.get().createEntityManager();
+		try {
+	        em.persist(customerOrder);
+	    } finally {
+	        em.close();
+	    }
+		
 	}
+
 }
