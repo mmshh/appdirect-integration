@@ -1,50 +1,31 @@
 package com.appdirect.integration.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
-import com.google.appengine.api.datastore.Key;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
 
 @Entity
 public class CustomerOrder {
-
+	 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Key key;
+    String id;
 	
-	private String customerName;
+	String customerName;
 	
-	private String editionCode;
+	String editionCode;
 	
-	public CustomerOrder(String customerName, String editionCode){
+	public CustomerOrder(){
 		
+	}
+	
+	public CustomerOrder(String id, String customerName, String editionCode){
+		
+		this.id = id;
 		this.customerName = customerName;
 		this.editionCode = editionCode;
 	}
-
-	public Key getKey() {
-		return key;
-	}
-
-	public void setKey(Key key) {
-		this.key = key;
-	}
-
-	public String getCustomerName() {
-		return customerName;
-	}
-
-	public void setCustomerName(String customerName) {
-		this.customerName = customerName;
-	}
-
-	public String getEditionCode() {
-		return editionCode;
-	}
-
-	public void setEditionCode(String editionCode) {
-		this.editionCode = editionCode;
+	
+	@Override
+	public String toString(){
+		return "Customer Name: "+ customerName + "\nEdition Code: "+ editionCode + "\nUUID: "+ id;
 	}
 }

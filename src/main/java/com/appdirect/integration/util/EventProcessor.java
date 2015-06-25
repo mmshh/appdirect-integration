@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 import java.util.logging.Logger;
-
-import javax.persistence.EntityManager;
-
-import com.appdirect.integration.entity.CustomerOrder;
 
 import oauth.signpost.OAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthConsumer;
@@ -17,13 +14,15 @@ import oauth.signpost.exception.OAuthCommunicationException;
 import oauth.signpost.exception.OAuthExpectationFailedException;
 import oauth.signpost.exception.OAuthMessageSignerException;
 
+import com.appdirect.integration.entity.CustomerOrder;
+import com.googlecode.objectify.ObjectifyService;
+
 
 
 
 public class EventProcessor {
 
 	private static final Logger log = Logger.getLogger( EventProcessor.class.getName() );
-	EntityManager em = EMF.get().createEntityManager();
 	
 	public static StringBuffer fetchOrder(String eventUrl) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException{
 
@@ -61,14 +60,18 @@ public class EventProcessor {
 		return response;
 	}
 
-	public static void persist(CustomerOrder customerOrder) {
-		EntityManager em = EMF.get().createEntityManager();
-		try {
-	        em.persist(customerOrder);
-	    } finally {
-	        em.close();
-	    }
+	public static void saveOrder(CustomerOrder customerOrder) {
 		
+		ObjectifyService.register(CustomerOrder.class);
+		ObjectifyService.ofy().save().entity(customerOrder).now();
+
 	}
 
+	public static List<CustomerOrder> listOrders(){
+		
+		ObjectifyService.register(CustomerOrder.class);
+		List<CustomerOrder> orderlist = ObjectifyService.ofy().load().type(CustomerOrder.class).list();
+		
+		return orderlist;
+	}
 }
